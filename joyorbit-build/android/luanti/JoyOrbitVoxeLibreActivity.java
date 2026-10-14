@@ -2,6 +2,8 @@ package io.precisiondata.joyorbit.voxel;
 
 public final class JoyOrbitVoxeLibreActivity extends net.minetest.minetest.GameActivity {
     private boolean startDown, selectDown;
+    private final android.os.Handler returnHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable longBackReturn = () -> nativeSendQuit();
     @Override protected String[] getLibraries() { return new String[] {"joyorbit_voxel"}; }
     @Override protected String getMainSharedObject() {
         return getApplicationInfo().nativeLibraryDir + "/libjoyorbit_voxel.so";
@@ -16,10 +18,16 @@ public final class JoyOrbitVoxeLibreActivity extends net.minetest.minetest.GameA
     @Override public void openURI(String uri) { /* Offline game; no external navigation. */ }
     @Override public void shareFile(String path) { /* Exports are not part of this game flow. */ }
     @Override public void onWindowFocusChanged(boolean focused) {
-        if (!focused) { startDown = false; selectDown = false; }
+        if (!focused) { startDown = false; selectDown = false; returnHandler.removeCallbacks(longBackReturn); }
         super.onWindowFocusChanged(focused);
     }
     @Override public boolean dispatchKeyEvent(android.view.KeyEvent event) {
+        if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_BACK) {
+            if (event.getAction() == android.view.KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0)
+                returnHandler.postDelayed(longBackReturn, 700);
+            else if (event.getAction() == android.view.KeyEvent.ACTION_UP)
+                returnHandler.removeCallbacks(longBackReturn);
+        }
         if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_BUTTON_START)
             startDown = event.getAction() == android.view.KeyEvent.ACTION_DOWN;
         if (event.getKeyCode() == android.view.KeyEvent.KEYCODE_BUTTON_SELECT)
@@ -32,6 +40,7 @@ public final class JoyOrbitVoxeLibreActivity extends net.minetest.minetest.GameA
         return super.dispatchKeyEvent(event);
     }
     @Override public void onDestroy() {
+        returnHandler.removeCallbacks(longBackReturn);
         super.onDestroy();
         android.os.Process.killProcess(android.os.Process.myPid());
     }
