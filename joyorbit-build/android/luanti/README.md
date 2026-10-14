@@ -1,0 +1,1 @@
+Luanti and VoxeLibre are pinned, source-built sandbox integration inputs. The SDL namespace is isolated from other bundled engines. Assets, settings and worlds are intended to stay in the app's own game directory, and the launcher bypasses the engine's catalogue/server menu. Runtime and controller acceptance are separate from compilation.

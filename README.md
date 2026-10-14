@@ -146,3 +146,7 @@ minor/trivial features considered necessary.
 Since 5.0.0-dev and 0.4.17-dev, the dev notation refers to the next release,
 i.e.: 5.0.0-dev is the development version leading to 5.0.0.
 Prior to that we used `previous_version-dev`.
+
+## JoyOrbit integration
+
+The [joyorbit-build](joyorbit-build/) directory retains the pinned build and offline launcher modifications. The recipes target the recorded release commit, independently of this fork's current upstream snapshot.
